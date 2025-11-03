@@ -26,30 +26,30 @@ This example assumes that you have a working cluster. See the [Getting Started G
 
 Use the `examples/guestbook-go/redis-master-controller.yaml` file to create a [replication controller](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a replication controller is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the self-healing mechanism in Kubernetes (keeps the pods alive).
 
-1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master replication controller in your Kubernetes cluster by running the `kubectl create -f` *`filename`* command:
+1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master deployment in your Kubernetes cluster by running the `kubectl create -f` *`filename`* command:
 
     ```console
     $ kubectl create -f guestbook-go/redis-master-controller.yaml
    
     ```
 
-2. To verify that the redis-master controller is up, list the replication controllers you created in the cluster with the `kubectl get rc` command(if you don't specify a `--namespace`, the `default` namespace will be used. The same below):
+2. To verify that the redis-master controller is up, list the deployments you created in the cluster with the `kubectl get deployments` command(if you don't specify a `--namespace`, the `default` namespace will be used. The same below):
 
     ```console
-    $ kubectl get rc
-    CONTROLLER             CONTAINER(S)            IMAGE(S)                    SELECTOR                         REPLICAS
-    redis-master           redis-master            gurpartap/redis             app=redis,role=master            1
-    ...
+    $ kubectl get deployments
+    NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+    redis-master   1/1     1            1           33m
+...
     ```
 
-    Result: The replication controller then creates the single Redis master pod.
+    Result: The deployment then creates the single Redis master pod.
 
 3. To verify that the redis-master pod is running, list the pods you created in cluster with the `kubectl get pods` command:
 
     ```console
     $ kubectl get pods
-    NAME                        READY     STATUS    RESTARTS   AGE
-    redis-master-xx4uv          1/1       Running   0          1m
+    NAME                            READY   STATUS    RESTARTS   AGE
+    redis-master-5b97bdb85f-vvk28   1/1     Running   0          35m
     ...
     ```
 
@@ -108,7 +108,6 @@ The Redis master we created earlier is a single pod (REPLICAS = 1), while the Re
     ```console
     $ kubectl get rc
     CONTROLLER              CONTAINER(S)            IMAGE(S)                         SELECTOR                    REPLICAS
-    redis-master            redis-master            redis                            app=redis,role=master       1
     redis-replica           redis-replica           registry.k8s.io/redis-slave:v2   app=redis,role=replica      2
     ...
     ```
@@ -126,10 +125,10 @@ The Redis master we created earlier is a single pod (REPLICAS = 1), while the Re
 
     ```console
     $ kubectl get pods
-    NAME                          READY     STATUS    RESTARTS   AGE
-    redis-master-xx4uv            1/1       Running   0          18m
-    redis-replica-b6wj4           1/1       Running   0          1m
-    redis-replica-iai40           1/1       Running   0          1m
+    NAME                            READY     STATUS    RESTARTS   AGE
+    redis-master-5b97bdb85f-vvk28   1/1       Running   0          35m
+    redis-replica-b6wj4             1/1       Running   0          1m
+    redis-replica-iai40             1/1       Running   0          1m
     ...
     ```
 
@@ -179,7 +178,6 @@ This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni
     $ kubectl get rc
     CONTROLLER            CONTAINER(S)         IMAGE(S)                               SELECTOR                  REPLICAS
     guestbook             guestbook            registry.k8s.io/guestbook:v3           app=guestbook             3
-    redis-master          redis-master         redis                                  app=redis,role=master     1
     redis-replica         redis-replica        registry.k8s.io/redis-replica:v2       app=redis,role=replica    2
     ...
     ```
@@ -188,13 +186,13 @@ This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni
 
     ```console
     $ kubectl get pods
-    NAME                           READY     STATUS    RESTARTS   AGE
-    guestbook-3crgn                1/1       Running   0          2m
-    guestbook-gv7i6                1/1       Running   0          2m
-    guestbook-x405a                1/1       Running   0          2m
-    redis-master-xx4uv             1/1       Running   0          23m
-    redis-replica-b6wj4              1/1       Running   0          6m
-    redis-replica-iai40              1/1       Running   0          6m
+    NAME                            READY     STATUS    RESTARTS   AGE
+    guestbook-3crgn                 1/1       Running   0          2m
+    guestbook-gv7i6                 1/1       Running   0          2m
+    guestbook-x405a                 1/1       Running   0          2m
+    redis-master-5b97bdb85f-vvk28   1/1       Running   0          23m
+    redis-replica-b6wj4             1/1       Running   0          6m
+    redis-replica-iai40             1/1       Running   0          6m
     ...
     ```
 
