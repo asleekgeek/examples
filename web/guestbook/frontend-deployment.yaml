@@ -21,6 +21,10 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 100Mi
+        
         env:
         - name: GET_HOSTS_FROM
           value: dns
@@ -31,3 +35,15 @@ spec:
           # value: env
         ports:
         - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
